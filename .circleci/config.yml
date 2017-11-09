@@ -1,0 +1,12 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/sgreben/render
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run: make build
+    - run: docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD" quay.io
+    - run: make push

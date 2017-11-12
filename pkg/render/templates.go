@@ -5,28 +5,20 @@ import (
 	"os"
 	"path"
 	"text/template"
+
+	"github.com/gobwas/glob"
 )
 
 type Templates struct {
-	Root  *template.Template
-	Funcs template.FuncMap
-	Vars  map[string]interface{}
-	Names []string
+	Root    *template.Template
+	Funcs   template.FuncMap
+	Vars    map[string]interface{}
+	Names   []string
+	Exclude glob.Glob
 }
 
 func setupTemplate(t *template.Template) {
 	t.Option("missingkey=zero")
-}
-
-func shouldExclude(excludes string, t *template.Template) (bool, error) {
-	if excludes != "" {
-		exclude, err := path.Match(excludes, t.Name())
-		if err != nil {
-			return false, err
-		}
-		return exclude, nil
-	}
-	return false, nil
 }
 
 func (t *Templates) Render(excludes string, separator string, w io.Writer) error {
@@ -41,11 +33,7 @@ func (t *Templates) Render(excludes string, separator string, w io.Writer) error
 	n := len(t.Names)
 	for i, templateName := range t.Names {
 		template := t.Root.Lookup(templateName)
-		exclude, err := shouldExclude(excludes, template)
-		if err != nil {
-			return err
-		}
-		if exclude {
+		if t.Exclude != nil && t.Exclude.Match(template.Name()) {
 			continue
 		}
 		err = template.Execute(w, t.Vars)
@@ -65,16 +53,12 @@ func (t *Templates) Render(excludes string, separator string, w io.Writer) error
 func (t *Templates) RenderToDir(excludes string, dir string) error {
 	for _, templateName := range t.Names {
 		template := t.Root.Lookup(templateName)
-		exclude, err := shouldExclude(excludes, template)
-		if err != nil {
-			return err
-		}
-		if exclude {
+		if t.Exclude != nil && t.Exclude.Match(template.Name()) {
 			continue
 		}
 		templatePath := path.Join(dir, template.Name())
 		templatePathDir := path.Dir(templatePath)
-		err = os.MkdirAll(templatePathDir, 0777|os.ModeDir)
+		err := os.MkdirAll(templatePathDir, 0777|os.ModeDir)
 		if err != nil {
 			return err
 		}
@@ -95,6 +79,11 @@ func (t *Templates) RenderToDir(excludes string, dir string) error {
 }
 
 func (t *Templates) FromConfig(funcs template.FuncMap, config *Config) error {
+	exclude, err := glob.Compile(config.TemplateOutExclude)
+	if err != nil {
+		return err
+	}
+	t.Exclude = exclude
 	t.Root = template.New("root")
 	t.Root.Delims(config.TemplateLeftDelim, config.TemplateRightDelim)
 	t.Funcs = funcs

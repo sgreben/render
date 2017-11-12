@@ -247,6 +247,8 @@ Usage of render:
     	load variable values from a file (or stdin, if - is given) ([<key>=]<path>)
   -var-file-slurp value
     	set a single variable to a file's contents (or stdin, if - is given) (<variable>=<path>)
+  -var-files-slurp value
+    	load all files matching the given glob pattern as variables ([<key>]=<glob>)
   -version
     	print version and exit
 ```

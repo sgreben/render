@@ -24,6 +24,7 @@ func init() {
 	varsSourcesParameter := varsSourcesParameter{&config.VarsSources}
 	varsSourcesFile := varsSourcesFile{&config.VarsSources}
 	varsSourcesFileSlurp := varsSourcesFileSlurp{&config.VarsSources}
+	varsSourcesFilesSlurp := varsSourcesFilesSlurp{&config.VarsSources}
 	varsSourcesEnvPrefix := varsSourcesEnvPrefix{&config.VarsSources}
 
 	templateSourcesParameter := templateSourcesParameter{&config.TemplateSources}
@@ -36,6 +37,7 @@ func init() {
 
 	flag.Var(&varsSourcesParameter, "var", "a single variable definition (<variable>=<value>)")
 	flag.Var(&varsSourcesFileSlurp, "var-file-slurp", "set a single variable to a file's contents (or stdin, if - is given) (<variable>=<path>)")
+	flag.Var(&varsSourcesFilesSlurp, "var-files-slurp", "load all files matching the given glob pattern as variables ([<key>]=<glob>)")
 	flag.Var(&varsSourcesFile, "var-file", "load variable values from a file (or stdin, if - is given) ([<key>=]<path>)")
 	flag.Var(&varsSourcesEnvPrefix, "var-env", "load variables matching the given prefix from the environment ([<key>=]<prefix>)")
 

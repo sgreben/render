@@ -4,15 +4,17 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 type VarsSource struct {
-	Key           string               `json:",omitempty"`
-	FromEnv       *VarsSourceEnv       `json:",omitempty"`
-	FromFile      *VarsSourceFile      `json:",omitempty"`
-	FromFileSlurp *VarsSourceFileSlurp `json:",omitempty"`
-	FromParameter *VarsSourceParameter `json:",omitempty"`
-	FromStdin     *VarsSourceStdin     `json:",omitempty"`
+	Key            string                `json:",omitempty"`
+	FromEnv        *VarsSourceEnv        `json:",omitempty"`
+	FromFile       *VarsSourceFile       `json:",omitempty"`
+	FromFileSlurp  *VarsSourceFileSlurp  `json:",omitempty"`
+	FromFilesSlurp *VarsSourceFilesSlurp `json:",omitempty"`
+	FromParameter  *VarsSourceParameter  `json:",omitempty"`
+	FromStdin      *VarsSourceStdin      `json:",omitempty"`
 }
 
 func (v *VarsSource) Load(vars Vars) error {
@@ -35,6 +37,9 @@ func (v *VarsSource) Load(vars Vars) error {
 	if v.FromFileSlurp != nil {
 		return v.FromFileSlurp.Load(vars)
 	}
+	if v.FromFilesSlurp != nil {
+		return v.FromFilesSlurp.Load(vars)
+	}
 	if v.FromParameter != nil {
 		v.FromParameter.Load(vars)
 		return nil
@@ -52,6 +57,24 @@ type VarsSourceParameter struct {
 
 func (v *VarsSourceParameter) Load(vars Vars) {
 	vars[v.Key] = v.Value
+}
+
+type VarsSourceFilesSlurp struct {
+	Glob string
+}
+
+func (v VarsSourceFilesSlurp) Load(vars Vars) error {
+	paths, err := filepath.Glob(v.Glob)
+	if err != nil {
+		return err
+	}
+	for _, path := range paths {
+		err := VarsSourceFileSlurp{Name: path, Path: path}.Load(vars)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type VarsSourceFileSlurp struct {

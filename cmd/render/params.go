@@ -18,14 +18,18 @@ type varsSourcesFile struct {
 type varsSourcesFileSlurp struct {
 	store *[]*render.VarsSource
 }
+type varsSourcesFilesSlurp struct {
+	store *[]*render.VarsSource
+}
 type varsSourcesEnvPrefix struct {
 	store *[]*render.VarsSource
 }
 
-func (v *varsSourcesParameter) String() string { return "" }
-func (v *varsSourcesFile) String() string      { return "" }
-func (v *varsSourcesFileSlurp) String() string { return "" }
-func (v *varsSourcesEnvPrefix) String() string { return "" }
+func (v *varsSourcesParameter) String() string  { return "" }
+func (v *varsSourcesFile) String() string       { return "" }
+func (v *varsSourcesFileSlurp) String() string  { return "" }
+func (v *varsSourcesFilesSlurp) String() string { return "" }
+func (v *varsSourcesEnvPrefix) String() string  { return "" }
 
 func (v *varsSourcesParameter) Set(value string) error {
 	i := strings.IndexByte(value, byte('='))
@@ -76,6 +80,23 @@ func (v *varsSourcesFileSlurp) Set(value string) error {
 		FromFileSlurp: &render.VarsSourceFileSlurp{
 			Name: value[:i],
 			Path: value[i+1:],
+		},
+	}
+	*v.store = append(*v.store, varsSource)
+	return nil
+}
+
+func (v *varsSourcesFilesSlurp) Set(value string) error {
+	i := strings.IndexByte(value, byte('='))
+	key := ""
+	if i >= 0 {
+		key = value[:i]
+		value = value[i+1:]
+	}
+	varsSource := &render.VarsSource{
+		Key: key,
+		FromFilesSlurp: &render.VarsSourceFilesSlurp{
+			Glob: value,
 		},
 	}
 	*v.store = append(*v.store, varsSource)

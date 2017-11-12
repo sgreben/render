@@ -26,6 +26,12 @@
   version = "v1.0.1"
 
 [[projects]]
+  name = "github.com/gobwas/glob"
+  packages = [".","compiler","match","syntax","syntax/ast","syntax/lexer","util/runes","util/strings"]
+  revision = "bea32b9cd2d6f55753d94a28e959b13f0244797a"
+  version = "v0.2.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/huandu/xstrings"
   packages = ["."]
@@ -70,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dd87ab30b92861d7e9abc6e9f432272a2dd2cfce155b366c546462ab5a7a9ed9"
+  inputs-digest = "2c28e9aa27bd5319ed554c0b3dff6abe070754579281a52723f79479de513647"
   solver-name = "gps-cdcl"
   solver-version = 1

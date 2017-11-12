@@ -18,6 +18,11 @@ type VarsSource struct {
 }
 
 func (v *VarsSource) Load(vars Vars) error {
+	if v.FromFilesSlurp != nil {
+		files, err := v.FromFilesSlurp.Load()
+		vars[v.Key] = files
+		return err
+	}
 	if v.Key != "" {
 		if destination, ok := vars[v.Key].(map[string]interface{}); ok {
 			vars = Vars(destination)
@@ -36,9 +41,6 @@ func (v *VarsSource) Load(vars Vars) error {
 	}
 	if v.FromFileSlurp != nil {
 		return v.FromFileSlurp.Load(vars)
-	}
-	if v.FromFilesSlurp != nil {
-		return v.FromFilesSlurp.Load(vars)
 	}
 	if v.FromParameter != nil {
 		v.FromParameter.Load(vars)
@@ -63,18 +65,21 @@ type VarsSourceFilesSlurp struct {
 	Glob string
 }
 
-func (v VarsSourceFilesSlurp) Load(vars Vars) error {
+func (v VarsSourceFilesSlurp) Load() (Files, error) {
+	m := map[string]interface{}{}
+	files := Files(m)
 	paths, err := filepath.Glob(v.Glob)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	for _, path := range paths {
-		err := VarsSourceFileSlurp{Name: path, Path: path}.Load(vars)
+		bytes, err := ioutil.ReadFile(path)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		files[path] = string(bytes)
 	}
-	return nil
+	return files, nil
 }
 
 type VarsSourceFileSlurp struct {

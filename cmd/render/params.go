@@ -88,15 +88,13 @@ func (v *varsSourcesFileSlurp) Set(value string) error {
 
 func (v *varsSourcesFilesSlurp) Set(value string) error {
 	i := strings.IndexByte(value, byte('='))
-	key := ""
-	if i >= 0 {
-		key = value[:i]
-		value = value[i+1:]
+	if i <= 0 {
+		return errors.New("syntax: key=glob")
 	}
 	varsSource := &render.VarsSource{
-		Key: key,
+		Key: value[:i],
 		FromFilesSlurp: &render.VarsSourceFilesSlurp{
-			Glob: value,
+			Glob: value[i+1:],
 		},
 	}
 	*v.store = append(*v.store, varsSource)

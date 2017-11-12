@@ -35,6 +35,11 @@ $ echo "{{ .env.SHELL }} {{ .env.USER }}" | render -var-env env=
 ```
 
 ```bash
+$ render -var-files-slurp Files="*.toml" -t '{{ keys .Files }}'
+[Gopkg.toml]
+```
+
+```bash
 $ echo '{ "foo": { "bar": "baz" } }' | render -var-file - -t "value of foo.bar: {{ .foo.bar }}"
 value of foo.bar: baz
 ```
@@ -248,7 +253,7 @@ Usage of render:
   -var-file-slurp value
     	set a single variable to a file's contents (or stdin, if - is given) (<variable>=<path>)
   -var-files-slurp value
-    	load all files matching the given glob pattern as variables ([<key>]=<glob>)
+    	load all files matching the given glob pattern as variables (<key>=<glob>)
   -version
     	print version and exit
 ```

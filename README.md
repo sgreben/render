@@ -35,6 +35,12 @@ $ echo "{{ .env.SHELL }} {{ .env.USER }}" | render -var-env env=
 ```
 
 ```bash
+$ render -var-env "{SHELL,USER}" -t '{{ . | toYAML }}'
+SHELL: /bin/bash
+USER: sgreben
+```
+
+```bash
 $ render -var-files-slurp Files="*.toml" -t '{{ keys .Files }}'
 [Gopkg.toml]
 ```
@@ -247,7 +253,7 @@ Usage of render:
   -var value
     	a single variable definition (<variable>=<value>)
   -var-env value
-    	load variables matching the given prefix from the environment ([<key>=]<prefix>)
+    	load variables matching the given glob pattern from the environment ([<key>=]<glob>)
   -var-file value
     	load variable values from a file (or stdin, if - is given) ([<key>=]<path>)
   -var-file-slurp value

@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/gobwas/glob"
 )
 
 type VarsSource struct {
@@ -151,9 +153,17 @@ func (v VarsSourceFile) Load(vars Vars) error {
 }
 
 type VarsSourceEnv struct {
-	Prefix string `json:",omitempty"`
+	Glob string `json:",omitempty"`
 }
 
-func (v VarsSourceEnv) Load(vars Vars) {
-	vars.fromEnv(v.Prefix)
+func (v VarsSourceEnv) Load(vars Vars) error {
+	if v.Glob == "" {
+		v.Glob = "*"
+	}
+	glob, err := glob.Compile(v.Glob)
+	if err != nil {
+		return err
+	}
+	vars.fromEnv(glob)
+	return nil
 }

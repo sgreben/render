@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	toml "github.com/BurntSushi/toml"
+	"github.com/gobwas/glob"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -130,11 +131,11 @@ func (v Vars) fromEnvSingle(key string) {
 	v[key] = os.Getenv(key)
 }
 
-func (v Vars) fromEnv(prefix string) {
+func (v Vars) fromEnv(glob glob.Glob) {
 	for _, entry := range os.Environ() {
 		i := strings.IndexByte(entry, byte('='))
 		key := entry[:i]
-		if strings.HasPrefix(key, prefix) {
+		if glob.Match(key) {
 			value := entry[i+1:]
 			v[key] = value
 		}

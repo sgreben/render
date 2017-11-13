@@ -21,7 +21,7 @@ type varsSourcesFileSlurp struct {
 type varsSourcesFilesSlurp struct {
 	store *[]*render.VarsSource
 }
-type varsSourcesEnvPrefix struct {
+type varsSourcesEnv struct {
 	store *[]*render.VarsSource
 }
 
@@ -29,7 +29,7 @@ func (v *varsSourcesParameter) String() string  { return "" }
 func (v *varsSourcesFile) String() string       { return "" }
 func (v *varsSourcesFileSlurp) String() string  { return "" }
 func (v *varsSourcesFilesSlurp) String() string { return "" }
-func (v *varsSourcesEnvPrefix) String() string  { return "" }
+func (v *varsSourcesEnv) String() string        { return "" }
 
 func (v *varsSourcesParameter) Set(value string) error {
 	i := strings.IndexByte(value, byte('='))
@@ -101,7 +101,7 @@ func (v *varsSourcesFilesSlurp) Set(value string) error {
 	return nil
 }
 
-func (v *varsSourcesEnvPrefix) Set(value string) error {
+func (v *varsSourcesEnv) Set(value string) error {
 	i := strings.IndexByte(value, byte('='))
 	key := ""
 	if i >= 0 {
@@ -111,7 +111,7 @@ func (v *varsSourcesEnvPrefix) Set(value string) error {
 	varsSource := &render.VarsSource{
 		Key: key,
 		FromEnv: &render.VarsSourceEnv{
-			Prefix: value,
+			Glob: value,
 		},
 	}
 	*v.store = append(*v.store, varsSource)

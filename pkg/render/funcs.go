@@ -11,7 +11,7 @@ import (
 	"text/template"
 
 	"github.com/BurntSushi/toml"
-	"github.com/Masterminds/sprig"
+	"github.com/Masterminds/sprig/v3"
 	yaml "gopkg.in/yaml.v2"
 )
 

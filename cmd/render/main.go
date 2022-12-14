@@ -7,7 +7,7 @@ import (
 	"sort"
 	"text/template"
 
-	"github.com/sgreben/render/pkg/render"
+	"github.com/aluki/render/pkg/render"
 	"github.com/sirupsen/logrus"
 )
 
